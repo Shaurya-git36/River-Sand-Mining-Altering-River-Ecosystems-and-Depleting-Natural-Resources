@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>River Sand Mining | Research Portal</title>
+  <meta name="description" content="Source-backed research portal on river sand mining, geomorphology, biodiversity, sediment budgets, case studies, governance and sustainable alternatives.">
+
+  <!-- Tailwind Play CDN: convenient for a single-file research prototype.
+       For production, compile Tailwind locally. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            river: {
+              50: "#eef8f8", 100: "#d9eeee", 200: "#b8dddd",
+              300: "#89c6c7", 400: "#58a9ac", 500: "#33898d",
+              600: "#267176", 700: "#215b5f", 800: "#20494d", 900: "#1d3d40"
+            },
+            sand: {
+              50: "#fbf7ee", 100: "#f5ead4", 200: "#ead5ad",
+              300: "#dcc18b", 400: "#cda96a", 500: "#bb914b",
+              600: "#9d7437", 700: "#7d5a2f"
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js: used only for a chart whose values come from a cited study. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #253238;
+      background: #f8faf9;
+    }
+    .serif { font-family: Georgia, "Times New Roman", serif; }
+    .page { display:none; animation: pageIn .3s ease; }
+    .page.active { display:block; }
+    @keyframes pageIn {
+      from { opacity:0; transform:translateY(8px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    .river-gradient {
+      background:
+        radial-gradient(circle at 15% 10%, rgba(88,169,172,.28), transparent 32%),
+        radial-gradient(circle at 85% 30%, rgba(220,193,139,.20), transparent 30%),
+        linear-gradient(135deg,#15383c,#1d5559 55%,#2b7375);
+    }
+    .smallcaps { letter-spacing:.12em; text-transform:uppercase; }
+    .metric-card,.case-card,.solution-card {
+      transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .metric-card:hover,.case-card:hover,.solution-card:hover {
+      transform:translateY(-4px);
+      box-shadow:0 20px 45px rgba(29,61,64,.10);
+      border-color:#89c6c7;
+    }
+    .nav-link { transition:all .18s ease; }
+    .nav-link.active { background:#eef8f8; color:#1d3d40; }
+    .accordion-content { max-height:0; overflow:hidden; transition:max-height .35s ease; }
+    .accordion-item.open .accordion-content { max-height:650px; }
+    .accordion-item.open .chevron { transform:rotate(180deg); }
+    .chevron { transition:transform .2s ease; }
+    .mechanism-button,.hypothesis-tab { transition:all .18s ease; }
+    .chart-wrap { position:relative; height:360px; }
+    .evidence-badge {
+      font-size:.72rem;
+      padding:.25rem .55rem;
+      border-radius:999px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .source-card a { word-break:break-word; }
+  </style>
+</head>
+
+<body>
+
+<header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-20 items-center justify-between">
+      <a href="#/home" class="flex items-center gap-3">
+        <div class="grid h-11 w-11 place-items-center rounded-2xl bg-river-900 text-white">≈</div>
+        <div>
+          <div class="text-sm font-black tracking-wide text-river-900">RIVER SAND</div>
+          <div class="text-xs tracking-wider text-slate-500">RESEARCH PORTAL</div>
+        </div>
+      </a>
+
+      <nav class="hidden items-center gap-1 lg:flex" aria-label="Primary">
+        <a href="#/home" data-route="home" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Overview</a>
+        <a href="#/context" data-route="context" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Mechanisms</a>
+        <a href="#/ecosystems" data-route="ecosystems" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Ecosystems</a>
+        <a href="#/hypotheses" data-route="hypotheses" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Research</a>
+        <a href="#/crisis" data-route="crisis" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Case Studies</a>
+        <a href="#/solutions" data-route="solutions" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Solutions</a>
+        <a href="#/references" data-route="references" class="nav-link rounded-xl px-3 py-2 text-sm font-medium">Sources</a>
+      </nav>
+
+      <button id="mobileMenuButton" class="rounded-xl border border-slate-200 p-2 lg:hidden" aria-label="Open navigation" aria-expanded="false">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobileMenu" class="hidden border-t border-slate-100 py-3 lg:hidden">
+      <div class="flex flex-col gap-1">
+        <a href="#/home" data-route="home" class="nav-link rounded-xl px-3 py-3 text-sm">Overview</a>
+        <a href="#/context" data-route="context" class="nav-link rounded-xl px-3 py-3 text-sm">Mechanisms</a>
+        <a href="#/ecosystems" data-route="ecosystems" class="nav-link rounded-xl px-3 py-3 text-sm">Ecosystems</a>
+        <a href="#/hypotheses" data-route="hypotheses" class="nav-link rounded-xl px-3 py-3 text-sm">Research Framework</a>
+        <a href="#/crisis" data-route="crisis" class="nav-link rounded-xl px-3 py-3 text-sm">Case Studies</a>
+        <a href="#/solutions" data-route="solutions" class="nav-link rounded-xl px-3 py-3 text-sm">Solutions</a>
+        <a href="#/references" data-route="references" class="nav-link rounded-xl px-3 py-3 text-sm">Sources & Data</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- =========================================================
+     HOME
+========================================================= -->
+<section id="page-home" data-page="home" class="page active">
+
+  <section class="river-gradient text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <div class="max-w-5xl">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold smallcaps">Research Project</span>
+          <span class="text-sm text-teal-100">Geomorphology · Ecology · Resource Governance</span>
+        </div>
+
+        <h1 class="serif mt-6 text-5xl font-semibold leading-tight sm:text-6xl lg:text-7xl">
+          River Sand Mining:
+          <span class="text-sand-300">Altering River Ecosystems</span>
+          and Depleting Natural Resources
+        </h1>
+
+        <p class="mt-8 max-w-4xl text-lg leading-8 text-teal-50 sm:text-xl">
+          This portal examines river sand extraction as a coupled sediment–water–habitat problem.
+          It connects documented global resource demand with published evidence on riverbed
+          adjustment, groundwater interaction, aquatic habitat, biodiversity and governance.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a href="#/context" class="rounded-xl bg-sand-300 px-6 py-3 font-semibold text-river-900 hover:bg-sand-200">
+            Explore mechanisms
+          </a>
+          <a href="#/crisis" class="rounded-xl border border-white/25 bg-white/10 px-6 py-3 font-semibold text-white hover:bg-white/20">
+            See case studies
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-16 grid gap-5 lg:grid-cols-3">
+        <div class="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+          <div class="text-xs font-bold smallcaps text-sand-200">Research question</div>
+          <p class="mt-3 text-sm leading-7 text-teal-50">
+            When extraction exceeds local sediment replenishment, which measurable geomorphic
+            and ecological responses emerge first?
+          </p>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+          <div class="text-xs font-bold smallcaps text-sand-200">Evidence principle</div>
+          <p class="mt-3 text-sm leading-7 text-teal-50">
+            Separate global resource statistics, site-specific observations, and conceptual
+            research indicators instead of combining them into one misleading score.
+          </p>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+          <div class="text-xs font-bold smallcaps text-sand-200">Update standard</div>
+          <p class="mt-3 text-sm leading-7 text-teal-50">
+            Every quantitative claim on this version has an identified source or is explicitly
+            labelled illustrative.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="smallcaps text-sm font-bold text-river-600">Project abstract</div>
+      <h2 class="serif mt-3 max-w-4xl text-4xl font-semibold text-river-900 sm:text-5xl">
+        Sand is a construction material and a physical component of river ecosystems.
+      </h2>
+
+      <div class="mt-10 grid gap-10 lg:grid-cols-[1.35fr_.65fr]">
+        <div class="space-y-5 text-base leading-8 text-slate-600">
+          <p>
+            River channels continuously exchange sediment among the bed, bars, banks,
+            floodplains and downstream environments. Sand therefore contributes to both
+            human construction systems and the physical habitat structure of rivers.
+          </p>
+          <p>
+            The strongest general evidence does not support one universal “biodiversity-loss
+            percentage” for all rivers. Instead, systematic and critical reviews document
+            recurring pathways: riverbed lowering and widening, altered sediment transport,
+            degraded water quality, habitat modification and impacts on aquatic biodiversity.
+          </p>
+          <p>
+            Sustainable assessment must consequently be site-specific. A river's response
+            depends on extraction intensity, sediment supply, hydraulic regime, grain size,
+            channel form, groundwater connectivity and ecological sensitivity.
+          </p>
+        </div>
+
+        <aside class="rounded-3xl bg-sand-50 p-8">
+          <div class="text-xs font-bold smallcaps text-sand-700">Working principle</div>
+          <p class="serif mt-4 text-2xl leading-9 text-river-900">
+            Extraction should be evaluated against sediment replenishment and ecosystem
+            function, not simply against the amount of material available on the riverbed.
+          </p>
+          <p class="mt-5 text-sm leading-6 text-slate-500">
+            This is a research framing principle, not a universal legal threshold.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="smallcaps text-sm font-bold text-river-600">Verified headline metrics</div>
+        <h2 class="serif mt-3 text-4xl font-semibold text-river-900">The global resource context</h2>
+        <p class="mt-5 leading-7 text-slate-600">
+          These are deliberately separated from site-level river measurements.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+
+        <article class="metric-card rounded-3xl border border-slate-200 bg-white p-7">
+          <span class="evidence-badge bg-river-50 text-river-700">UNEP 2026</span>
+          <div class="mt-8 text-5xl font-black text-river-900">50B</div>
+          <div class="mt-2 font-semibold text-slate-700">tonnes / year</div>
+          <p class="mt-3 text-sm leading-6 text-slate-500">
+            Approximate annual global use of sand and gravel.
+          </p>
+          <a href="#/references" class="mt-4 inline-block text-xs font-semibold text-river-700">Source →</a>
+        </article>
+
+        <article class="metric-card rounded-3xl border border-slate-200 bg-white p-7">
+          <span class="evidence-badge bg-sand-50 text-sand-700">UNEP 2026</span>
+          <div class="mt-8 text-5xl font-black text-river-900">+45%</div>
+          <div class="mt-2 font-semibold text-slate-700">building-sand demand by 2060</div>
+          <p class="mt-3 text-sm leading-6 text-slate-500">
+            UNEP reports an increase of up to 45% in sand demand for buildings by 2060.
+          </p>
+          <a href="#/references" class="mt-4 inline-block text-xs font-semibold text-river-700">Source →</a>
+        </article>
+
+        <article class="metric-card rounded-3xl border border-slate-200 bg-white p-7">
+          <span class="evidence-badge bg-river-50 text-river-700">UNEP 2022</span>
+          <div class="mt-8 text-5xl font-black text-river-900">#2</div>
+          <div class="mt-2 font-semibold text-slate-700">most-used solid resource</div>
+          <p class="mt-3 text-sm leading-6 text-slate-500">
+            UNEP's 2022 assessment described sand as the world's second most exploited resource after water.
+          </p>
+          <a href="#/references" class="mt-4 inline-block text-xs font-semibold text-river-700">Source →</a>
+        </article>
+
+        <article class="metric-card rounded-3xl border border-slate-200 bg-white p-7">
+          <span class="evidence-badge bg-sand-50 text-sand-700">Research design</span>
+          <div class="mt-8 text-5xl font-black text-river-900">ΔS</div>
+          <div class="mt-2 font-semibold text-slate-700">sediment storage change</div>
+          <p class="mt-3 text-sm leading-6 text-slate-500">
+            A central variable for comparing sediment inputs, exports, storage and anthropogenic extraction.
+          </p>
+        </article>
+
+      </div>
+
+      <!-- VERIFIED DATA VISUALIZATIONS -->
+      <div class="mt-12">
+        <div class="max-w-3xl">
+          <div class="smallcaps text-sm font-bold text-river-600">Verified data visualizations</div>
+          <h2 class="serif mt-3 text-4xl font-semibold text-river-900">Graphs built from published figures</h2>
+          <p class="mt-5 leading-7 text-slate-600">
+            These charts use source-reported values rather than synthetic indexes. Each chart states
+            the scope and limitation of the underlying data so a site-specific study is not mistaken
+            for a global time series.
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+
+          <!-- GLOBAL UNEP SCALE -->
+          <article class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="smallcaps text-xs font-bold text-river-600">UNEP reported scale</div>
+                <h3 class="mt-2 text-xl font-bold text-river-900">Global annual sand & gravel use</h3>
+              </div>
+              <span class="evidence-badge bg-river-50 text-river-700">2019–2026</span>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-slate-500">
+              2019: UNEP reported a range of 40–50 billion tonnes/year. 2022 and 2026 UNEP releases
+              cite about 50 billion tonnes/year. This is a reported scale comparison, not a
+              harmonized measurement time series.
+            </p>
+            <div class="chart-wrap mt-6">
+              <canvas id="globalSandChart"></canvas>
+            </div>
+            <div class="mt-4 text-xs leading-5 text-slate-400">
+              Sources: UNEP 2019, UNEP 2022, UNEP 2026. See Sources page.
+            </div>
+          </article>
+
+          <!-- MEKONG -->
+          <article class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="smallcaps text-xs font-bold text-river-600">Mekong Delta · 2018</div>
+                <h3 class="mt-2 text-xl font-bold text-river-900">Sand extraction estimates</h3>
+              </div>
+              <span class="evidence-badge bg-sand-50 text-sand-700">Jordan et al. 2019</span>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-slate-500">
+              The 4.64 ± 0.31 Mm³/yr value is for an approximately 20-km Tien River study area;
+              17.77 Mm³/yr is the reported statistic for all Mekong Delta channels. Because the
+              spatial scopes differ, this graph is descriptive rather than a like-for-like rate comparison.
+            </p>
+            <div class="chart-wrap mt-6">
+              <canvas id="mekongChart"></canvas>
+            </div>
+            <div class="mt-4 text-xs leading-5 text-slate-400">
+              Source: Jordan et al., Scientific Reports (2019).
+            </div>
+          </article>
+
+          <!-- GANGA BENTHIC -->
+          <article class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="smallcaps text-xs font-bold text-river-600">Ganga · Haridwar · 2017–2018</div>
+                <h3 class="mt-2 text-xl font-bold text-river-900">Total macro-benthic abundance</h3>
+              </div>
+              <span class="evidence-badge bg-river-50 text-river-700">Kamboj & Kamboj 2021</span>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-slate-500">
+              Annual totals reported across the four study zones: A is the reference zone;
+              B, C and D were mining-impacted zones. Units are individuals per m².
+            </p>
+            <div class="chart-wrap mt-6">
+              <canvas id="gangaBenthicChart"></canvas>
+            </div>
+            <div class="mt-4 text-xs leading-5 text-slate-400">
+              Source values: Zone A 1205; B 899; C 714; D 497 ind./m². Study also reported 29
+              macro-benthic species overall.
+            </div>
+          </article>
+
+          <!-- GANGA WATER QUALITY -->
+          <article class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="smallcaps text-xs font-bold text-river-600">Ganga · Haridwar · 2017–2018</div>
+                <h3 class="mt-2 text-xl font-bold text-river-900">Selected habitat parameters by zone</h3>
+              </div>
+              <span class="evidence-badge bg-sand-50 text-sand-700">Kamboj & Kamboj 2021</span>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-slate-500">
+              The same study reported lower dissolved oxygen and higher BOD and TDS in the
+              mining-impacted zones than in reference Zone A. Each variable uses its original unit.
+            </p>
+            <div class="chart-wrap mt-6">
+              <canvas id="gangaWaterChart"></canvas>
+            </div>
+            <div class="mt-4 text-xs leading-5 text-slate-400">
+              DO is mg/L; BOD is mg/L; TDS is mg/L. Do not compare the three y-series directly:
+              they have different units and scales.
+            </div>
+          </article>
+
+          <!-- KERALA POLICY -->
+          <article class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm lg:col-span-2">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="smallcaps text-xs font-bold text-river-600">Kerala · 2016 ban year</div>
+                <h3 class="mt-2 text-xl font-bold text-river-900">Quarry expansion after river-sand regulation</h3>
+              </div>
+              <span class="evidence-badge bg-river-50 text-river-700">Ashok et al. 2025</span>
+            </div>
+            <p class="mt-4 max-w-4xl text-sm leading-6 text-slate-500">
+              The study analysed 72 quarries within a 10-km protected-area buffer and found that
+              areal expansion in 2016, the year the river-sand ban was fully enforced, was 1.74 times
+              the average annual expansion used for comparison. This is a policy-displacement result,
+              not evidence that quarrying is universally caused by sand bans.
+            </p>
+            <div class="chart-wrap mt-6">
+              <canvas id="keralaChart"></canvas>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <div class="rounded-3xl border border-slate-200 bg-white p-7">
+          <h3 class="text-xl font-bold text-river-900">What the evidence supports</h3>
+          <div class="mt-6 space-y-4">
+            <div class="rounded-2xl bg-river-50 p-5">
+              <div class="font-bold text-river-900">Physical environment</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">
+                Riverbed lowering and widening are recurring documented effects in the review literature.
+              </p>
+            </div>
+            <div class="rounded-2xl bg-sand-50 p-5">
+              <div class="font-bold text-river-900">Aquatic environment</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">
+                Turbidity, altered flow patterns and habitat disturbance can affect water quality and aquatic communities.
+              </p>
+            </div>
+            <div class="rounded-2xl bg-river-50 p-5">
+              <div class="font-bold text-river-900">Governance</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">
+                Reviews emphasize better monitoring, environmental safeguards, sand budgeting and governance.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-amber-200 bg-amber-50 p-7">
+          <div class="smallcaps text-xs font-bold text-amber-700">Important data warning</div>
+          <h3 class="mt-3 text-xl font-bold text-amber-900">There is no universal river-sand “biodiversity decline rate.”</h3>
+          <p class="mt-4 text-sm leading-7 text-amber-900/80">
+            The project therefore does not invent a global percentage. Biological effects vary by
+            river, extraction method, sediment regime and species assemblage. Site-level measured
+            data should be inserted where available.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+
+<!-- =========================================================
+     CONTEXT
+========================================================= -->
+<section id="page-context" data-page="context" class="page">
+
+  <section class="river-gradient text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+        <div class="smallcaps text-sm font-bold text-sand-200">Environmental mechanisms</div>
+        <h1 class="serif mt-3 text-5xl font-semibold sm:text-6xl">How extraction changes a river</h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-teal-50">
+          A river reach responds to the interaction of discharge, sediment supply, channel form,
+          grain size and bank resistance. Mining adds a new sediment sink to that system.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+      <div class="grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
+
+        <div>
+          <div class="smallcaps text-sm font-bold text-river-600">Sediment budget</div>
+          <h2 class="serif mt-3 text-4xl font-semibold text-river-900">
+            Compare extraction with replenishment.
+          </h2>
+          <p class="mt-6 leading-8 text-slate-600">
+            The research framework treats sediment storage as the difference between material
+            entering, leaving and being removed from a reach. This does not produce a universal
+            “safe” number by itself; it provides a physically interpretable starting point.
+          </p>
+
+          <div class="mt-8 rounded-3xl bg-river-900 p-8 text-white">
+            <div class="text-xs font-bold smallcaps text-teal-200">Conceptual equation</div>
+            <div class="mt-6 text-center font-mono text-xl sm:text-2xl">
+              ΔS = <span class="text-sand-300">Inputs</span>
+              − <span class="text-red-300">Export</span>
+              − <span class="text-red-300">Extraction</span>
+            </div>
+            <p class="mt-6 text-sm leading-6 text-teal-100">
+              Sustained negative storage change indicates a sediment deficit; the ecological
+              significance must then be assessed using field and remote-sensing evidence.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-5 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-river-900">Cause & effect explorer</h3>
+            <span class="text-xs text-slate-400">Evidence-backed mechanism summaries</span>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-3">
+            <button type="button" data-mechanism="bed" class="mechanism-button border-2 border-river-700 bg-river-50 rounded-2xl p-5 text-left">
+              <div class="text-xs font-bold smallcaps text-river-600">01</div>
+              <div class="mt-3 font-bold text-river-900">Bed degradation</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">Incision, widening and channel adjustment</p>
+            </button>
+
+            <button type="button" data-mechanism="water" class="mechanism-button border border-slate-200 bg-white rounded-2xl p-5 text-left">
+              <div class="text-xs font-bold smallcaps text-river-600">02</div>
+              <div class="mt-3 font-bold text-river-900">Groundwater</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">Potential changes in river–aquifer exchange</p>
+            </button>
+
+            <button type="button" data-mechanism="downstream" class="mechanism-button border border-slate-200 bg-white rounded-2xl p-5 text-left">
+              <div class="text-xs font-bold smallcaps text-river-600">03</div>
+              <div class="mt-3 font-bold text-river-900">Downstream</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">Reduced sediment delivery where extraction is substantial</p>
+            </button>
+          </div>
+
+          <div class="mt-5 rounded-3xl border border-river-100 bg-river-50 p-7">
+            <div class="flex items-start gap-4">
+              <div id="mechanismNumber" class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-river-800 text-white">01</div>
+              <div>
+                <div id="mechanismLabel" class="text-xs font-bold smallcaps text-river-600">Bed degradation</div>
+                <h4 id="mechanismTitle" class="mt-2 text-2xl font-bold text-river-900"></h4>
+                <p id="mechanismDescription" class="mt-4 leading-7 text-slate-600"></p>
+              </div>
+            </div>
+
+            <div class="mt-7 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-2xl bg-white p-4">
+                <div class="text-xs smallcaps text-slate-400">Driver</div>
+                <div id="mechanismDriver" class="mt-2 font-bold text-river-900"></div>
+              </div>
+              <div class="rounded-2xl bg-white p-4">
+                <div class="text-xs smallcaps text-slate-400">Physical response</div>
+                <div id="mechanismPhysical" class="mt-2 font-bold text-river-900"></div>
+              </div>
+              <div class="rounded-2xl bg-white p-4">
+                <div class="text-xs smallcaps text-slate-400">Research measurement</div>
+                <div id="mechanismMeasure" class="mt-2 font-bold text-river-900"></div>
+              </div>
+            </div>
+          </div>
+
+          <p class="mt-4 text-xs leading-5 text-slate-400">
+            Mechanism descriptions synthesized from the 2022 systematic review and 2025 review listed in Sources.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+      <div class="grid gap-6 lg:grid-cols-3">
+
+        <article class="rounded-3xl border border-slate-200 bg-white p-7">
+          <div class="font-bold text-river-900">Riverbed degradation</div>
+          <p class="mt-4 text-sm leading-7 text-slate-600">
+            The systematic review literature identifies riverbed lowering and widening as primary
+            physical responses associated with river sand extraction.
+          </p>
+          <div class="mt-6 rounded-2xl bg-river-50 p-5">
+            <div class="text-xs font-bold smallcaps text-river-600">Measure</div>
+            <p class="mt-2 text-sm text-slate-600">Bed elevation, cross-sections, bank position, grain size.</p>
+          </div>
+        </article>
+
+        <article class="rounded-3xl border border-slate-200 bg-white p-7">
+          <div class="font-bold text-river-900">Groundwater interaction</div>
+          <p class="mt-4 text-sm leading-7 text-slate-600">
+            Published reviews identify groundwater depletion or altered river–aquifer connectivity
+            as a potential consequence, with magnitude dependent on local hydrogeology.
+          </p>
+          <div class="mt-6 rounded-2xl bg-sand-50 p-5">
+            <div class="text-xs font-bold smallcaps text-sand-700">Measure</div>
+            <p class="mt-2 text-sm text-slate-600">Piezometric levels, river stage, seasonal gradients.</p>
+          </div>
+        </article>
+
+        <article class="rounded-3xl border border-slate-200 bg-white p-7">
+          <div class="font-bold text-river-900">Water quality and habitat</div>
+          <p class="mt-4 text-sm leading-7 text-slate-600">
+            Critical reviews associate mining-related sediment disturbance and altered flow patterns
+            with increased turbidity and changes to aquatic habitat conditions.
+          </p>
+          <div class="mt-6 rounded-2xl bg-river-50 p-5">
+            <div class="text-xs font-bold smallcaps text-river-600">Measure</div>
+            <p class="mt-2 text-sm text-slate-600">Turbidity, dissolved oxygen, substrate, habitat complexity.</p>
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section class="bg-white py-20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <div class="smallcaps text-sm font-bold text-river-600">Deep research context</div>
+        <h2 class="serif mt-3 text-4xl font-semibold text-river-900">Important qualifications</h2>
+      </div>
+
+      <div id="contextAccordion" class="mt-10 space-y-3">
+
+        <div class="accordion-item rounded-2xl border border-slate-200 bg-white">
+          <button class="accordion-trigger flex w-full items-center justify-between gap-5 p-6 text-left">
+            <span class="font-bold text-river-900">Does river sand mining automatically cause ecosystem collapse?</span>
+            <svg class="chevron h-5 w-5 text-river-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-content px-6">
+            <p class="pb-6 text-sm leading-7 text-slate-600">
+              No. Evidence shows recurring physical and ecological effects, but the magnitude varies.
+              A defensible assessment must consider extraction rate, river regime, sediment replenishment,
+              channel sensitivity, extraction method and ecological context.
+            </p>
+          </div>
+        </div>
+
+        <div class="accordion-item rounded-2xl border border-slate-200 bg-white">
+          <button class="accordion-trigger flex w-full items-center justify-between gap-5 p-6 text-left">
+            <span class="font-bold text-river-900">Why avoid a single global biodiversity-loss percentage?</span>
+            <svg class="chevron h-5 w-5 text-river-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-content px-6">
+            <p class="pb-6 text-sm leading-7 text-slate-600">
+              Studies use different organisms, sampling designs, river types and impact metrics.
+              A pooled global percentage could falsely imply comparability that the underlying studies
+              do not provide.
+            </p>
+          </div>
+        </div>
+
+        <div class="accordion-item rounded-2xl border border-slate-200 bg-white">
+          <button class="accordion-trigger flex w-full items-center justify-between gap-5 p-6 text-left">
+            <span class="font-bold text-river-900">What should a management threshold contain?</span>
+            <svg class="chevron h-5 w-5 text-river-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-content px-6">
+            <p class="pb-6 text-sm leading-7 text-slate-600">
+              Ideally, thresholds combine sediment-budget evidence, geomorphic stability,
+              water-resource indicators and ecological measurements, with explicit uncertainty
+              and a monitoring plan.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</section>
+
+
+<!-- =========================================================
+     ECOSYSTEMS
+========================================================= -->
+<section id="page-ecosystems" data-page="ecosystems" class="page">
+
+  <section class="river-gradient text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+        <div class="smallcaps text-sm font-bold text-sand-200">Ecosystem impacts</div>
+        <h1 class="serif mt-3 text-5xl font-semibold sm:text-6xl">Biodiversity: what the evidence actually says</h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-teal-50">
+          The literature supports multiple biological pathways, but there is no scientifically
+          defensible single global loss percentage. The dashboard below therefore uses a
+          published field-study result rather than fabricated comparison scores.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+      <div class="grid gap-5 md:grid-cols-3">
+
+        <div class="rounded-3xl bg-river-50 p-7">
+          <div class="text-3xl">🪱</div>
+          <h3 class="mt-4 text-xl font-bold text-river-900">Benthic organisms</h3>
+          <p class="mt-3 text-sm leading-7 text-slate-600">
+            Bed disturbance can change substrate conditions, turbidity and the physical habitat
+            available to benthic organisms.
+          </p>
+        </div>
+
+        <div class="rounded-3xl bg-sand-50 p-7">
+          <div class="text-3xl">🐟</div>
+          <h3 class="mt-4 text-xl font-bold text-river-900">Fish habitat</h3>
+          <p class="mt-3 text-sm leading-7 text-slate-600">
+            Changes in depth, velocity, substrate and turbidity can affect habitat and reproductive conditions.
+          </p>
+        </div>
+
+        <div class="rounded-3xl bg-river-50 p-7">
+          <div class="text-3xl">🌿</div>
+          <h3 class="mt-4 text-xl font-bold text-river-900">Riparian systems</h3>
+          <p class="mt-3 text-sm leading-7 text-slate-600">
+            Bank instability and groundwater changes can affect the structure and persistence of riparian vegetation.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="mt-10 rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+        <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <div class="smallcaps text-xs font-bold text-river-600">Published field-study result</div>
+            <h2 class="mt-2 text-2xl font-bold text-river-900">
+              Example: Ganga River macro-benthic study
+            </h2>
+          </div>
+          <span class="evidence-badge bg-river-50 text-river-700">Kamboj & Kamboj, 2021</span>
+        </div>
+
+        <p class="mt-5 max-w-4xl text-sm leading-7 text-slate-600">
+          The study compared a reference zone with mining-impacted zones in the Ganga and reported
+          significant differences in habitat parameters including substratum, dissolved oxygen,
+          biochemical oxygen demand, turbidity and total dissolved solids. The page intentionally
+          does not invent numerical effect sizes where the accessible abstract does not provide them.
+        </p>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-2">
+          <div class="rounded-2xl bg-river-50 p-6">
+            <div class="font-bold text-river-900">Measured comparison</div>
+            <p class="mt-2 text-sm leading-6 text-slate-600">
+              Reference zone vs. three mining-impacted zones; April 2017–March 2018.
+            </p>
+          </div>
+          <div class="rounded-2xl bg-sand-50 p-6">
+            <div class="font-bold text-river-900">Reported outcome</div>
+            <p class="mt-2 text-sm leading-6 text-slate-600">
+              Significant differences in selected habitat and water-quality parameters.
+            </p>
+          </div>
+        </div>
+
+        <a
+          href="https://www.researchgate.net/publication/354353266_Sand-Gravel_Mining_as_a_Threat_to_Macro-benthic_Assemblage_and_Habitat_Parameters_A_Case_Study_of_River_Ganga_India"
+          target="_blank" rel="noopener"
+          class="mt-6 inline-block text-sm font-semibold text-river-700"
+        >
+          View study record →
+        </a>
+      </div>
+
+      <div class="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-7">
+        <div class="smallcaps text-xs font-bold text-amber-700">Data integrity</div>
+        <p class="mt-3 text-sm leading-7 text-amber-900/80">
+          Earlier prototype versions used made-up “reference vs mined” index values. Those values
+          have been removed from this research version. A final quantitative dashboard should ingest
+          actual site-level observations with metadata, units, sample size and uncertainty.
+        </p>
+      </div>
+
+    </div>
+  </section>
+</section>
+
+
+<!-- =========================================================
+     HYPOTHESES / RESEARCH
+========================================================= -->
+<section id="page-hypotheses" data-page="hypotheses" class="page">
+
+  <section class="bg-river-900 text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+        <div class="smallcaps text-sm font-bold text-sand-300">Research framework</div>
+        <h1 class="serif mt-3 text-5xl font-semibold sm:text-6xl">Hypotheses and methodology</h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-teal-100">
+          These hypotheses are testable research propositions rather than claims that have already
+          been proven by the website.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+
+      <div class="grid gap-3 md:grid-cols-3">
+        <button data-hypothesis="h1" class="hypothesis-tab rounded-2xl border-2 border-river-900 bg-river-900 p-5 text-left text-white">
+          <div class="text-xs font-bold smallcaps opacity-70">H1</div>
+          <div class="mt-2 font-bold">Sediment budget</div>
+        </button>
+        <button data-hypothesis="h2" class="hypothesis-tab rounded-2xl border border-slate-200 bg-white p-5 text-left">
+          <div class="text-xs font-bold smallcaps text-river-600">H2</div>
+          <div class="mt-2 font-bold text-river-900">Geomorphic stability</div>
+        </button>
+        <button data-hypothesis="h3" class="hypothesis-tab rounded-2xl border border-slate-200 bg-white p-5 text-left">
+          <div class="text-xs font-bold smallcaps text-river-600">H3</div>
+          <div class="mt-2 font-bold text-river-900">Ecological response</div>
+        </button>
+      </div>
+
+      <div id="hypothesisContent" class="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"></div>
+
+      <div class="mt-10 rounded-3xl bg-white p-8 shadow-sm">
+        <div class="smallcaps text-xs font-bold text-river-600">Proposed methods</div>
+        <h2 class="serif mt-3 text-3xl font-semibold text-river-900">A mixed-method design</h2>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-2">
+          <div class="rounded-2xl bg-river-50 p-6">
+            <div class="font-bold text-river-900">01 · Sediment sampling</div>
+            <p class="mt-3 text-sm leading-7 text-slate-600">
+              Bed-material grain-size sampling upstream, within and downstream of extraction reaches;
+              combine with sediment transport or storage estimates where feasible.
+            </p>
+          </div>
+          <div class="rounded-2xl bg-sand-50 p-6">
+            <div class="font-bold text-river-900">02 · Channel surveys</div>
+            <p class="mt-3 text-sm leading-7 text-slate-600">
+              Repeat cross-sections, bankline mapping and longitudinal profiles to identify
+              incision, widening or bar-volume changes.
+            </p>
+          </div>
+          <div class="rounded-2xl bg-river-50 p-6">
+            <div class="font-bold text-river-900">03 · Remote sensing</div>
+            <p class="mt-3 text-sm leading-7 text-slate-600">
+              Use time-series satellite imagery to map channel width, exposed bars, extraction
+              footprints and bank migration.
+            </p>
+          </div>
+          <div class="rounded-2xl bg-sand-50 p-6">
+            <div class="font-bold text-river-900">04 · Ecological surveys</div>
+            <p class="mt-3 text-sm leading-7 text-slate-600">
+              Sample benthic communities, fish habitat and selected water-quality indicators
+              using a consistent reference/impact design.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</section>
+
+
+<!-- =========================================================
+     CASE STUDIES / CRISIS
+========================================================= -->
+<section id="page-crisis" data-page="crisis" class="page">
+
+  <section class="river-gradient text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+        <div class="smallcaps text-sm font-bold text-sand-200">Global resource crisis</div>
+        <h1 class="serif mt-3 text-5xl font-semibold sm:text-6xl">Three evidence-rich case-study lenses</h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-teal-50">
+          Case studies are kept geographically and methodologically distinct so their numbers are
+          not accidentally presented as if they were directly comparable global estimates.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+      <!-- MEKONG -->
+      <article class="case-card rounded-3xl border border-slate-200 bg-white p-8">
+        <div class="grid gap-8 lg:grid-cols-[.75fr_1.25fr]">
+          <div>
+            <span class="evidence-badge bg-river-50 text-river-700">Peer-reviewed · Scientific Reports · 2019</span>
+            <h2 class="serif mt-4 text-3xl font-semibold text-river-900">Mekong Delta</h2>
+            <p class="mt-4 text-sm leading-7 text-slate-600">
+              Jordan et al. used intensive bathymetric surveys in a roughly 20-km study area
+              of the Tien River branch during 2018 to estimate extraction and local refill.
+            </p>
+          </div>
+
+          <div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl bg-river-50 p-6">
+                <div class="text-xs font-bold smallcaps text-river-600">Study-area extraction</div>
+                <div class="mt-2 text-3xl font-black text-river-900">4.64 ± 0.31</div>
+                <div class="text-sm text-slate-600">million m³/year</div>
+              </div>
+              <div class="rounded-2xl bg-sand-50 p-6">
+                <div class="text-xs font-bold smallcaps text-sand-700">Reported delta statistics</div>
+                <div class="mt-2 text-3xl font-black text-river-900">17.77</div>
+                <div class="text-sm text-slate-600">million m³/year</div>
+              </div>
+            </div>
+
+            <p class="mt-5 text-sm leading-7 text-slate-600">
+              The study concluded that official extraction statistics for the wider Mekong Delta
+              were likely conservative and that upper-basin sediment supply was insufficient to
+              compensate for extracted bed aggregates in the study context.
+            </p>
+
+            <a
+              href="https://www.nature.com/articles/s41598-019-53804-z"
+              target="_blank" rel="noopener"
+              class="mt-5 inline-block text-sm font-semibold text-river-700"
+            >
+              Read the published study →
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- INDIA -->
+      <article class="case-card mt-6 rounded-3xl border border-slate-200 bg-white p-8">
+        <div class="grid gap-8 lg:grid-cols-[.75fr_1.25fr]">
+          <div>
+            <span class="evidence-badge bg-sand-50 text-sand-700">Peer-reviewed · Extractive Industries & Society · 2025</span>
+            <h2 class="serif mt-4 text-3xl font-semibold text-river-900">Kerala, India</h2>
+            <p class="mt-4 text-sm leading-7 text-slate-600">
+              A 2025 study examined quarry expansion following Kerala's river-sand regulation,
+              highlighting an important policy lesson: restricting one extraction pathway can
+              shift pressure into another material system.
+            </p>
+          </div>
+
+          <div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl bg-river-50 p-6">
+                <div class="text-xs font-bold smallcaps text-river-600">Quarries examined</div>
+                <div class="mt-2 text-3xl font-black text-river-900">72</div>
+                <div class="text-sm text-slate-600">within a 10-km protected-area buffer</div>
+              </div>
+              <div class="rounded-2xl bg-sand-50 p-6">
+                <div class="text-xs font-bold smallcaps text-sand-700">2016 expansion</div>
+                <div class="mt-2 text-3xl font-black text-river-900">1.74×</div>
+                <div class="text-sm text-slate-600">the average annual expansion used for comparison</div>
+              </div>
+            </div>
+
+            <p class="mt-5 text-sm leading-7 text-slate-600">
+              The authors describe the result as evidence that regulation should consider
+              substitution and displacement effects rather than assessing river-sand regulation
+              in isolation. The paper also discusses the role of manufactured sand.
+            </p>
+
+            <a
+              href="https://doi.org/10.1016/j.exis.2025.101671"
+              target="_blank" rel="noopener"
+              class="mt-5 inline-block text-sm font-semibold text-river-700"
+            >
+              View publication →
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- AFRICA -->
+      <article class="case-card mt-6 rounded-3xl border border-slate-200 bg-white p-8">
+        <div class="grid gap-8 lg:grid-cols-[.75fr_1.25fr]">
+          <div>
+            <span class="evidence-badge bg-river-50 text-river-700">Review · The Extractive Industries & Society · 2023</span>
+            <h2 class="serif mt-4 text-3xl font-semibold text-river-900">Sub-Saharan Africa</h2>
+            <p class="mt-4 text-sm leading-7 text-slate-600">
+              Bendixen et al. reviewed the construction-sand literature for the region, emphasizing
+              the links among urbanization, livelihoods, construction demand and environmental impacts.
+            </p>
+          </div>
+
+          <div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl bg-river-50 p-6">
+                <div class="text-xs font-bold smallcaps text-river-600">Articles reviewed</div>
+                <div class="mt-2 text-3xl font-black text-river-900">93</div>
+                <div class="text-sm text-slate-600">journal articles</div>
+              </div>
+              <div class="rounded-2xl bg-sand-50 p-6">
+                <div class="text-xs font-bold smallcaps text-sand-700">Recent literature</div>
+                <div class="mt-2 text-3xl font-black text-river-900">91%</div>
+                <div class="text-sm text-slate-600">published in the most recent five years reviewed</div>
+              </div>
+            </div>
+
+            <p class="mt-5 text-sm leading-7 text-slate-600">
+              The review identifies livelihood and economic drivers alongside environmental effects
+              such as pollution and infrastructure damage; it also notes positive socioeconomic
+              effects such as income, jobs and taxes.
+            </p>
+
+            <a
+              href="https://doi.org/10.1016/j.exis.2023.101364"
+              target="_blank" rel="noopener"
+              class="mt-5 inline-block text-sm font-semibold text-river-700"
+            >
+              View publication →
+            </a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="bg-white py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div class="smallcaps text-xs font-bold text-river-600">Interpretation rule</div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          These case-study numbers are not pooled into a “global extraction rate.” They represent
+          different spatial scales, years and methods. Their value lies in illustrating how the
+          research problem changes with local sediment systems and governance context.
+        </p>
+      </div>
+    </div>
+  </section>
+</section>
+
+
+<!-- =========================================================
+     SOLUTIONS
+========================================================= -->
+<section id="page-solutions" data-page="solutions" class="page">
+
+  <section class="bg-river-900 text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+        <div class="smallcaps text-sm font-bold text-sand-300">Solutions & alternatives</div>
+        <h1 class="serif mt-3 text-5xl font-semibold sm:text-6xl">
+          Reduce demand, improve substitution, and govern extraction adaptively.
+        </h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-teal-100">
+          UNEP recommends treating sand as a strategic resource. A credible solution portfolio
+          must consider demand reduction, alternatives, lifecycle trade-offs and basin-specific governance.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 md:grid-cols-2">
+
+        <article class="solution-card rounded-3xl border border-slate-200 bg-white p-8">
+          <span class="evidence-badge bg-river-50 text-river-700">Alternative material</span>
+          <h2 class="mt-5 text-2xl font-bold text-river-900">Manufactured sand</h2>
+          <p class="mt-4 leading-7 text-slate-600">
+            Crushed-rock manufactured sand can substitute for natural sand in suitable construction
+            applications. It should not be assumed automatically “green”: quarry location, crushing
+            energy, dust, transport and ecological impacts of source rock must also be assessed.
+          </p>
+        </article>
+
+        <article class="solution-card rounded-3xl border border-slate-200 bg-white p-8">
+          <span class="evidence-badge bg-sand-50 text-sand-700">Circular economy</span>
+          <h2 class="mt-5 text-2xl font-bold text-river-900">Recycled aggregates</h2>
+          <p class="mt-4 leading-7 text-slate-600">
+            Reuse of suitable construction and demolition materials can reduce demand for virgin
+            aggregates where engineering specifications and contamination controls permit.
+          </p>
+        </article>
+
+        <article class="solution-card rounded-3xl border border-slate-200 bg-white p-8">
+          <span class="evidence-badge bg-river-50 text-river-700">Governance</span>
+          <h2 class="mt-5 text-2xl font-bold text-river-900">Sand budgeting</h2>
+          <p class="mt-4 leading-7 text-slate-600">
+            Permit systems can be linked to measured sediment budgets rather than relying only on
+            nominal extraction quotas.
+          </p>
+        </article>
+
+        <article class="solution-card rounded-3xl border border-slate-200 bg-white p-8">
+          <span class="evidence-badge bg-sand-50 text-sand-700">Monitoring</span>
+          <h2 class="mt-5 text-2xl font-bold text-river-900">Adaptive governance</h2>
+          <p class="mt-4 leading-7 text-slate-600">
+            Remote sensing, field surveys and ecological monitoring can be used to update extraction
+            rules when river condition indicators move toward unacceptable change.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="smallcaps text-sm font-bold text-river-600">Governance model</div>
+        <h2 class="serif mt-3 text-4xl font-semibold text-river-900">A practical monitoring loop</h2>
+      </div>
+
+      <div class="mt-10 grid gap-5 md:grid-cols-4">
+        <div class="rounded-3xl bg-river-50 p-7">
+          <div class="text-2xl font-black text-river-700">01</div>
+          <h3 class="mt-4 font-bold text-river-900">Measure</h3>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Estimate sediment inputs, extraction and storage changes.</p>
+        </div>
+        <div class="rounded-3xl bg-sand-50 p-7">
+          <div class="text-2xl font-black text-sand-700">02</div>
+          <h3 class="mt-4 font-bold text-river-900">Compare</h3>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Compare impact reaches with appropriate reference reaches.</p>
+        </div>
+        <div class="rounded-3xl bg-river-50 p-7">
+          <div class="text-2xl font-black text-river-700">03</div>
+          <h3 class="mt-4 font-bold text-river-900">Act</h3>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Modify permits or extraction limits when thresholds are approached.</p>
+        </div>
+        <div class="rounded-3xl bg-sand-50 p-7">
+          <div class="text-2xl font-black text-sand-700">04</div>
+          <h3 class="mt-4 font-bold text-river-900">Review</h3>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Publish monitoring results and revise management assumptions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+
+<!-- =========================================================
+     REFERENCES
+========================================================= -->
+<section id="page-references" data-page="references" class="page">
+
+  <section class="river-gradient text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+        <div class="smallcaps text-sm font-bold text-sand-200">Sources & data provenance</div>
+        <h1 class="serif mt-3 text-5xl font-semibold sm:text-6xl">What each number means</h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-teal-50">
+          This page is intentionally part of the website architecture. Scientific claims are
+          easier to trust when visitors can inspect the source, publication year and scope of the evidence.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="mb-8 rounded-3xl border border-river-200 bg-river-50 p-7">
+        <div class="smallcaps text-xs font-bold text-river-600">Chart provenance</div>
+        <p class="mt-3 text-sm leading-7 text-slate-700">
+          Home and Ecosystems charts use the exact figures quoted from the cited UNEP,
+          Jordan et al., Kamboj & Kamboj, and Ashok et al. sources. Values are not pooled across
+          studies, and units/scopes are shown in the chart captions.
+        </p>
+      </div>
+    </div>
+
+
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-5">
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">UNEP — Sand: Wanted dead and alive. Use it wisely, warns the UN (2026)</h2>
+          <span class="evidence-badge bg-river-50 text-river-700">Global statistics</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports the approximately 50-billion-tonne annual sand-use figure and the projection that
+          building-related sand demand could rise by up to 45% by 2060.
+        </p>
+        <a href="https://www.unep.org/news-and-stories/press-release/sand-wanted-dead-and-alive-use-it-wisely-warns-un" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open source →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">UNEP — Sand and Sustainability: 10 Strategic Recommendations to Avert a Crisis (2022)</h2>
+          <span class="evidence-badge bg-sand-50 text-sand-700">Policy context</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports the strategic-resource framing, 50-billion-tonne scale and recommendations concerning
+          governance, recycled materials, crushed rock and improved management.
+        </p>
+        <a href="https://www.unep.org/resources/report/sand-and-sustainability-10-strategic-recommendations-avert-crisis" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open report →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Rentier & Cammeraat — The environmental impacts of river sand mining (2022)</h2>
+          <span class="evidence-badge bg-river-50 text-river-700">Systematic review</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports the broad physical, biological, chemical and anthropogenic impact framework,
+          including riverbed lowering and widening, biodiversity impacts and water-quality effects.
+        </p>
+        <a href="https://www.sciencedirect.com/science/article/pii/S0048969722029746" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open article →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Tripathi et al. — A review of river sand mining: Methods, impacts, and implications (2025)</h2>
+          <span class="evidence-badge bg-sand-50 text-sand-700">Review</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports interdisciplinary methods including field measurements, remote sensing, GIS,
+          ecological assessment and sand budgeting.
+        </p>
+        <a href="https://www.sciencedirect.com/science/article/abs/pii/S305047592500020X" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open article →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Suthar et al. — Aquatic ecosystems review (2024)</h2>
+          <span class="evidence-badge bg-river-50 text-river-700">Water quality & biodiversity</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports discussion of turbidity, altered flow, water-quality degradation, habitat disturbance
+          and biodiversity effects.
+        </p>
+        <a href="https://www.sciencedirect.com/science/article/pii/S2589757824000040" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open article →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Jordan et al. — Sand mining in the Mekong Delta revisited (2019)</h2>
+          <span class="evidence-badge bg-sand-50 text-sand-700">Mekong quantitative case</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Provides the 2018 study-area estimate of 4.64 ± 0.31 million m³/year and reports 17.77 million m³/year
+          as statistics for all Mekong Delta channels for the period discussed.
+        </p>
+        <a href="https://www.nature.com/articles/s41598-019-53804-z" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open article →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Ashok et al. — Kerala, India (2025)</h2>
+          <span class="evidence-badge bg-river-50 text-river-700">Policy displacement case</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports the figures concerning 72 quarries in a 10-km buffer and 2016 quarry expansion at
+          1.74 times the comparison annual expansion; it also documents the M-sand substitution context.
+        </p>
+        <a href="https://doi.org/10.1016/j.exis.2025.101671" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open article →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Bendixen et al. — Construction-sand mining in Sub-Saharan Africa (2023)</h2>
+          <span class="evidence-badge bg-sand-50 text-sand-700">Regional review</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports the 93-article review count, the 91% recent-publication statistic reported by the
+          review, and the discussion of livelihood, urbanisation, pollution and infrastructure drivers/effects.
+        </p>
+        <a href="https://doi.org/10.1016/j.exis.2023.101364" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open article →</a>
+      </article>
+
+      <article class="source-card rounded-3xl border border-slate-200 bg-white p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold text-river-900">Kamboj & Kamboj — Ganga River macro-benthic study (2021)</h2>
+          <span class="evidence-badge bg-river-50 text-river-700">Ecological case</span>
+        </div>
+        <p class="mt-4 text-sm leading-7 text-slate-600">
+          Supports the existence and design of a reference-versus-mining comparison in the Ganga,
+          including significant differences in substratum and water-quality parameters.
+        </p>
+        <a href="https://www.researchgate.net/publication/354353266_Sand-Gravel_Mining_as_a_Threat_to_Macro-benthic_Assemblage_and_Habitat_Parameters_A_Case_Study_of_River_Ganga_India" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-semibold text-river-700">Open study record →</a>
+      </article>
+
+    </div>
+  </section>
+</section>
+
+</main>
+
+
+<footer class="bg-river-900 text-white">
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="grid gap-10 md:grid-cols-3">
+      <div>
+        <div class="text-sm font-bold smallcaps text-sand-300">River Sand Research Portal</div>
+        <p class="mt-4 max-w-md text-sm leading-7 text-teal-100">
+          A source-backed research interface for investigating river sand extraction and
+          coupled geomorphic, hydrological, ecological and governance responses.
+        </p>
+      </div>
+      <div>
+        <div class="text-sm font-bold smallcaps text-sand-300">Evidence status</div>
+        <p class="mt-4 text-sm leading-7 text-teal-100">
+          Global statistics and case-study figures are sourced. Illustrative datasets from the
+          earlier prototype have been removed from the scientific dashboard.
+        </p>
+      </div>
+      <div>
+        <div class="text-sm font-bold smallcaps text-sand-300">Built for extension</div>
+        <p class="mt-4 text-sm leading-7 text-teal-100">
+          The single-file architecture can later be connected to CSV/JSON datasets, GIS layers,
+          APIs and a production database without changing the research logic.
+        </p>
+      </div>
+    </div>
+    <div class="mt-10 border-t border-white/10 pt-6 text-xs text-teal-200">
+      © 2026 River Sand Mining Research Project · Source-backed prototype
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  /* =========================================================
+     ROUTER
+  ========================================================= */
+  const ROUTES = ["home","context","ecosystems","hypotheses","crisis","solutions","references"];
+
+  const PAGE_TITLES = {
+    home: "River Sand Mining | Research Portal",
+    context: "Environmental Mechanisms | River Sand Mining",
+    ecosystems: "Ecosystem Impacts | River Sand Mining",
+    hypotheses: "Research Framework | River Sand Mining",
+    crisis: "Case Studies | River Sand Mining",
+    solutions: "Solutions | River Sand Mining",
+    references: "Sources & Data | River Sand Mining"
+  };
+
+  const mobileMenu = document.getElementById("mobileMenu");
+  const mobileMenuButton = document.getElementById("mobileMenuButton");
+
+  function currentRoute() {
+    const raw = window.location.hash || "#/home";
+    const route = raw.replace("#/","").split("?")[0];
+    return ROUTES.includes(route) ? route : "home";
+  }
+
+  function renderRoute() {
+    const route = currentRoute();
+
+    document.querySelectorAll("[data-page]").forEach(page => {
+      page.classList.toggle("active", page.dataset.page === route);
+    });
+
+    document.querySelectorAll("[data-route]").forEach(link => {
+      link.classList.toggle("active", link.dataset.route === route);
+    });
+
+    document.title = PAGE_TITLES[route];
+
+    mobileMenu.classList.add("hidden");
+    mobileMenuButton.setAttribute("aria-expanded","false");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (route === "ecosystems") {
+      // The chart is only created if a chart canvas is later added.
+      // The present version intentionally avoids fabricating chart values.
+    }
+  }
+
+  window.addEventListener("hashchange", renderRoute);
+
+  mobileMenuButton.addEventListener("click", () => {
+    const open = !mobileMenu.classList.contains("hidden");
+    mobileMenu.classList.toggle("hidden");
+    mobileMenuButton.setAttribute("aria-expanded", String(!open));
+  });
+
+
+  /* =========================================================
+     MECHANISM EXPLORER
+  ========================================================= */
+  const mechanisms = {
+    bed: {
+      number:"01",
+      label:"Bed degradation",
+      title:"Extraction can create a local sediment deficit.",
+      description:"Published reviews identify riverbed lowering and widening as recurring physical responses to river sand extraction. The exact response depends on the extraction volume, location, sediment regime and channel dynamics.",
+      driver:"Removal of bed material",
+      physical:"Lowering / widening / adjustment",
+      measure:"Repeat cross-sections + bed elevation"
+    },
+    water: {
+      number:"02",
+      label:"Groundwater interaction",
+      title:"Channel lowering can change river–aquifer relationships.",
+      description:"Reviews identify groundwater effects as a potential consequence of excessive river sand extraction. The direction and magnitude are site-dependent and should be tested using hydrogeological measurements rather than assumed.",
+      driver:"Change in channel elevation",
+      physical:"Hydraulic-gradient change",
+      measure:"Piezometric levels + river stage"
+    },
+    downstream: {
+      number:"03",
+      label:"Downstream sediment delivery",
+      title:"Extraction can interrupt the sediment cascade.",
+      description:"Removing mobile sediment upstream can reduce downstream delivery when extraction is large relative to natural sediment supply. This is a basin-connectivity hypothesis that should be evaluated with sediment-budget evidence.",
+      driver:"Reduced sediment transfer",
+      physical:"Sediment deficit downstream",
+      measure:"Sediment flux + bar/storage change"
+    }
+  };
+
+  const mechanismButtons = document.querySelectorAll(".mechanism-button");
+
+  function setMechanism(key) {
+    const d = mechanisms[key];
+    document.getElementById("mechanismNumber").textContent = d.number;
+    document.getElementById("mechanismLabel").textContent = d.label;
+    document.getElementById("mechanismTitle").textContent = d.title;
+    document.getElementById("mechanismDescription").textContent = d.description;
+    document.getElementById("mechanismDriver").textContent = d.driver;
+    document.getElementById("mechanismPhysical").textContent = d.physical;
+    document.getElementById("mechanismMeasure").textContent = d.measure;
+
+    mechanismButtons.forEach(btn => {
+      const active = btn.dataset.mechanism === key;
+      btn.classList.toggle("border-2", active);
+      btn.classList.toggle("border-river-700", active);
+      btn.classList.toggle("bg-river-50", active);
+      btn.classList.toggle("border", !active);
+      btn.classList.toggle("border-slate-200", !active);
+      btn.classList.toggle("bg-white", !active);
+    });
+  }
+
+  mechanismButtons.forEach(btn => {
+    btn.addEventListener("click", () => setMechanism(btn.dataset.mechanism));
+  });
+
+
+  /* =========================================================
+     ACCORDION
+  ========================================================= */
+  document.querySelectorAll(".accordion-trigger").forEach(trigger => {
+    trigger.addEventListener("click", () => {
+      const item = trigger.closest(".accordion-item");
+      const wasOpen = item.classList.contains("open");
+
+      document.querySelectorAll(".accordion-item").forEach(i => i.classList.remove("open"));
+
+      if (!wasOpen) item.classList.add("open");
+    });
+  });
+
+
+  /* =========================================================
+     HYPOTHESES
+  ========================================================= */
+  const hypothesisData = {
+    h1: {
+      title:"Extraction intensity is associated with a measurable sediment-storage deficit.",
+      question:"Does extraction volume exceed replenishment sufficiently to produce persistent changes in reach-scale sediment storage?",
+      independent:"Extraction volume / intensity",
+      mediator:"Sediment budget",
+      dependent:"Change in sediment storage or bed elevation",
+      methods:["Sediment sampling","Sediment transport estimates","Bathymetric/cross-sectional surveys","Extraction records"]
+    },
+    h2: {
+      title:"Greater extraction pressure is associated with stronger geomorphic adjustment.",
+      question:"Do reaches with greater extraction pressure show stronger trends in bed lowering, widening or bank migration than suitable reference reaches?",
+      independent:"Extraction intensity",
+      mediator:"Altered sediment and hydraulic conditions",
+      dependent:"Channel morphology change",
+      methods:["Repeat cross-sections","Bankline mapping","Historical satellite imagery","Bed-material analysis"]
+    },
+    h3: {
+      title:"Habitat alteration mediates part of the biological response.",
+      question:"Are differences in benthic or fish communities associated with measured changes in substrate, turbidity, depth, velocity and habitat complexity?",
+      independent:"Habitat alteration",
+      mediator:"Substrate + hydraulic change",
+      dependent:"Biological community indicators",
+      methods:["Macroinvertebrate sampling","Fish surveys","Habitat classification","Water-quality measurements"]
+    }
+  };
+
+  const hypothesisContent = document.getElementById("hypothesisContent");
+
+  function renderHypothesis(key) {
+    const d = hypothesisData[key];
+
+    hypothesisContent.innerHTML = `
+      <div class="grid gap-8 lg:grid-cols-[1fr_.75fr]">
+        <div>
+          <div class="text-xs font-bold smallcaps text-river-600">${key.toUpperCase()}</div>
+          <h2 class="mt-3 text-3xl font-bold text-river-900">${d.title}</h2>
+          <p class="mt-5 leading-8 text-slate-600">${d.question}</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="rounded-2xl bg-river-50 p-5">
+            <div class="text-xs font-bold smallcaps text-river-600">Independent variable</div>
+            <div class="mt-2 font-semibold text-river-900">${d.independent}</div>
+          </div>
+          <div class="rounded-2xl bg-sand-50 p-5">
+            <div class="text-xs font-bold smallcaps text-sand-700">Mediator</div>
+            <div class="mt-2 font-semibold text-river-900">${d.mediator}</div>
+          </div>
+          <div class="rounded-2xl bg-river-50 p-5">
+            <div class="text-xs font-bold smallcaps text-river-600">Dependent variable</div>
+            <div class="mt-2 font-semibold text-river-900">${d.dependent}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <div class="text-xs font-bold smallcaps text-river-600">Suggested evidence</div>
+        <div class="mt-4 flex flex-wrap gap-3">
+          ${d.methods.map(m => `<span class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">${m}</span>`).join("")}
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll(".hypothesis-tab").forEach(btn => {
+      const active = btn.dataset.hypothesis === key;
+      btn.classList.toggle("bg-river-900", active);
+      btn.classList.toggle("text-white", active);
+      btn.classList.toggle("border-river-900", active);
+      btn.classList.toggle("bg-white", !active);
+    });
+  }
+
+  document.querySelectorAll(".hypothesis-tab").forEach(btn => {
+    btn.addEventListener("click", () => renderHypothesis(btn.dataset.hypothesis));
+  });
+
+
+  /* =========================================================
+     VERIFIED CHARTS
+  ========================================================= */
+  const chartInstances = {};
+
+  function makeChart(id, config) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    if (chartInstances[id]) chartInstances[id].destroy();
+    chartInstances[id] = new Chart(canvas.getContext("2d"), config);
+  }
+
+  function createVerifiedCharts() {
+    makeChart("globalSandChart", {
+      type: "line",
+      data: {
+        labels: ["2019", "2022", "2026"],
+        datasets: [
+          {
+            label: "Lower bound / reported level (billion t/yr)",
+            data: [40, 50, 50],
+            borderColor: "#33898d",
+            backgroundColor: "rgba(51,137,141,.10)",
+            fill: false,
+            tension: .25,
+            pointRadius: 5
+          },
+          {
+            label: "Upper bound (billion t/yr)",
+            data: [50, 50, 50],
+            borderColor: "#bb914b",
+            backgroundColor: "rgba(187,145,75,.08)",
+            fill: false,
+            tension: .25,
+            pointRadius: 5
+          }
+        ]
+      },
+      options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{ y:{ beginAtZero:false, title:{display:true,text:"Billion tonnes/year"} } },
+        plugins:{
+          legend:{position:"top"},
+          tooltip:{
+            callbacks:{
+              afterBody:function(items){
+                return "2019 is a 40–50B range; later values are approximately 50B.";
+              }
+            }
+          }
+        }
+      }
+    });
+
+    makeChart("mekongChart", {
+      type: "bar",
+      data: {
+        labels: ["20-km Tien study area", "Whole Mekong Delta (reported statistics)"],
+        datasets: [{
+          label: "Extraction (million m³/year)",
+          data: [4.64, 17.77],
+          backgroundColor: ["#33898d","#dcc18b"],
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{ y:{ beginAtZero:true, title:{display:true,text:"Million m³/year"} } },
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            callbacks:{
+              label:function(ctx){
+                return `${ctx.raw} million m³/year`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const gangaLabels = ["Zone A\n(reference)","Zone B\n(mining + sewage)","Zone C\n(mining + sewage)","Zone D\n(mining + sewage)"];
+
+    makeChart("gangaBenthicChart", {
+      type:"bar",
+      data:{
+        labels:gangaLabels,
+        datasets:[{
+          label:"Total macro-benthic abundance (ind./m²)",
+          data:[1205,899,714,497],
+          backgroundColor:["#33898d","#58a9ac","#dcc18b","#bb914b"],
+          borderRadius:8
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{ y:{ beginAtZero:true, title:{display:true,text:"Individuals per m²"} } },
+        plugins:{ legend:{display:false} }
+      }
+    });
+
+    makeChart("gangaWaterChart", {
+      type:"line",
+      data:{
+        labels:["Zone A","Zone B","Zone C","Zone D"],
+        datasets:[
+          {label:"Dissolved oxygen (mg/L)",data:[8.01,7.19,7.07,7.06],borderColor:"#33898d",backgroundColor:"rgba(51,137,141,.08)",tension:.25},
+          {label:"BOD (mg/L)",data:[1.58,2.59,2.86,2.89],borderColor:"#bb914b",backgroundColor:"rgba(187,145,75,.08)",tension:.25}
+        ]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{ y:{ beginAtZero:true, title:{display:true,text:"mg/L"} } },
+        plugins:{
+          legend:{position:"top"},
+          tooltip:{callbacks:{afterBody:()=> "Kamboj & Kamboj report mean ± SD; this chart plots means."}}
+        }
+      }
+    });
+
+    makeChart("keralaChart", {
+      type:"bar",
+      data:{
+        labels:["Average annual expansion benchmark","2016 ban year"],
+        datasets:[{
+          label:"Relative quarry areal expansion",
+          data:[1,1.74],
+          backgroundColor:["#89c6c7","#dcc18b"],
+          borderRadius:8
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{
+          y:{
+            beginAtZero:true,
+            title:{display:true,text:"Relative expansion (benchmark = 1.0)"}
+          }
+        },
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:ctx=>`${ctx.raw}× benchmark`}}
+        }
+      }
+    });
+
+    makeChart("ecosystemBenthicChart", {
+      type:"bar",
+      data:{
+        labels:["Zone A","Zone B","Zone C","Zone D"],
+        datasets:[{
+          label:"Macro-benthic abundance (ind./m²)",
+          data:[1205,899,714,497],
+          backgroundColor:["#33898d","#58a9ac","#dcc18b","#bb914b"],
+          borderRadius:8
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{ y:{beginAtZero:true,title:{display:true,text:"Individuals per m²"}} },
+        plugins:{legend:{display:false}}
+      }
+    });
+
+    makeChart("ecosystemDOChart", {
+      type:"line",
+      data:{
+        labels:["Zone A","Zone B","Zone C","Zone D"],
+        datasets:[
+          {label:"Dissolved oxygen",data:[8.01,7.19,7.07,7.06],borderColor:"#33898d",tension:.25},
+          {label:"BOD",data:[1.58,2.59,2.86,2.89],borderColor:"#bb914b",tension:.25}
+        ]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{ y:{beginAtZero:true,title:{display:true,text:"mg/L"}} },
+        plugins:{legend:{position:"top"}}
+      }
+    });
+  }
+
+
+  /* =========================================================
+     INITIALIZE
+  ========================================================= */
+  setMechanism("bed");
+  renderHypothesis("h1");
+  renderRoute();
+  createVerifiedCharts();
+</script>
+
+</body>
+</html>
